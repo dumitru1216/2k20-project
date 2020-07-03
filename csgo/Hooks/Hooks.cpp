@@ -8,12 +8,12 @@
 
 
 Misc     g_Misc;
-Hooks    g_Hooks;
-Event    g_Event;
+hooking hooks;
+Event g_Event;
 
-void Hooks::Init( ) {
+void hooking::initialize( ) {
 	// Get window handle
-	while ( !( g_Hooks.hCSGOWindow = FindWindowA( "Valve001", nullptr ) ) ) {
+	while ( !( hooks.hCSGOWindow = FindWindowA( "Valve001", nullptr ) ) ) {
 		using namespace std::literals::chrono_literals;
 		std::this_thread::sleep_for( 50ms );
 	}
@@ -21,24 +21,24 @@ void Hooks::Init( ) {
 	interfaces::Init( );                         // Get interfaces
 	g_pNetvars = std::make_unique<NetvarTree>( );// Get netvars after getting interfaces as we use them
 
-	if ( g_Hooks.hCSGOWindow )        // Hook WNDProc to capture mouse / keyboard input
-		g_Hooks.pOriginalWNDProc = reinterpret_cast< WNDPROC >( SetWindowLongPtr( g_Hooks.hCSGOWindow, GWLP_WNDPROC,
-			reinterpret_cast< LONG_PTR >( g_Hooks.WndProc ) ) );
+	if ( hooks.hCSGOWindow )        // Hook WNDProc to capture mouse / keyboard input
+		hooks.pOriginalWNDProc = reinterpret_cast< WNDPROC >( SetWindowLongPtr( hooks.hCSGOWindow, GWLP_WNDPROC,
+			reinterpret_cast< LONG_PTR >( hooks.WndProc ) ) );
 
-	g_Hooks.pClientHook.setup( g_pClientDll );
-	g_Hooks.pClientModeHook.setup( g_pClientMode );
-	g_Hooks.pSurfaceHook.setup( g_pSurface );
-	g_Hooks.pPanelHook.setup( g_pPanel );
-	g_Hooks.pModelHook.setup( g_pModelRender );
-	g_Hooks.pRenderViewHook.setup( g_pRenderView );
+	hooks.pClientHook.setup( g_pClientDll );
+	hooks.pClientModeHook.setup( g_pClientMode );
+	hooks.pSurfaceHook.setup( g_pSurface );
+	hooks.pPanelHook.setup( g_pPanel );
+	hooks.pModelHook.setup( g_pModelRender );
+	hooks.pRenderViewHook.setup( g_pRenderView );
 
-	g_Hooks.pClientHook.hook_index( hook_index::frame_stage, Hooks::FrameStageNotify  );
-	g_Hooks.pClientModeHook.hook_index( hook_index::create_move, Hooks::CreateMove );
-	g_Hooks.pClientModeHook.hook_index( hook_index::overide_view, Hooks::OverrideView );
-	g_Hooks.pSurfaceHook.hook_index( hook_index::lock_cursor, Hooks::LockCursor );
-	g_Hooks.pPanelHook.hook_index( hook_index::paint_traverse, Hooks::PaintTraverse );
-	g_Hooks.pModelHook.hook_index( hook_index::draw_model_execute, Hooks::DrawModelExecute );
-	g_Hooks.pRenderViewHook.hook_index( hook_index::scene_end, Hooks::SceneEnd );
+	hooks.pClientHook.hook_index( hook_index::frame_stage, hooking::frame_stage_notify  );
+	hooks.pClientModeHook.hook_index( hook_index::create_move, hooking::create_move );
+	hooks.pClientModeHook.hook_index( hook_index::overide_view, hooking::overide_view );
+	hooks.pSurfaceHook.hook_index( hook_index::lock_cursor, hooking::lock_cursor );
+	hooks.pPanelHook.hook_index( hook_index::paint_traverse, hooking::PaintTraverse );
+	hooks.pModelHook.hook_index( hook_index::draw_model_execute, hooking::DrawModelExecute );
+	hooks.pRenderViewHook.hook_index( hook_index::scene_end, hooking::SceneEnd );
 
 	g_Event.Init( );
 
@@ -51,10 +51,19 @@ void Hooks::Init( ) {
 	Utils::Log( "Hooking completed!" );
 }
 
-void Hooks::Restore( ) {
+void hooking::restore( ) {
 	
+	/* unhook indexes */
+	hooks.pClientHook.unhook_index( hook_index::frame_stage );
+	hooks.pClientModeHook.unhook_index( hook_index::create_move );
+	hooks.pClientModeHook.unhook_index( hook_index::overide_view );
+	hooks.pSurfaceHook.unhook_index( hook_index::lock_cursor );
+	hooks.pPanelHook.unhook_index( hook_index::paint_traverse );
+	hooks.pModelHook.unhook_index( hook_index::draw_model_execute );
+	hooks.pRenderViewHook.unhook_index( hook_index::scene_end );
+
 	/* reset csgo window */
-	SetWindowLongPtr( g_Hooks.hCSGOWindow, GWLP_WNDPROC, reinterpret_cast< LONG_PTR >( g_Hooks.pOriginalWNDProc ) );
+	SetWindowLongPtr( hooks.hCSGOWindow, GWLP_WNDPROC, reinterpret_cast< LONG_PTR >( hooks.pOriginalWNDProc ) );
 
 	/* reset netvars */
 	g_pNetvars.reset( );  
@@ -63,143 +72,47 @@ void Hooks::Restore( ) {
 	Utils::Log( "Unhooking succeded!" );
 }
 
-void Hooks::HookPlayers( )
-{
+void hooking::hook_players( ) {
 	static bool Init[ 65 ];
 	static bool Hooked[ 65 ];
 
-	for ( int i = 1; i < g_pEngine->GetMaxClients( ); ++i )
-	{
+	for ( int i = 1; i < g_pEngine->GetMaxClients( ); ++i ) {
 		C_BaseEntity* pPlayerEntity = g_pEntityList->GetClientEntity( i );
 
-		if ( !pPlayerEntity
-			|| !pPlayerEntity->IsAlive( )
-			|| pPlayerEntity->IsDormant( ) )
-		{
+		if ( !pPlayerEntity || !pPlayerEntity->IsAlive( ) || pPlayerEntity->IsDormant( ) ) {
 			if ( Hooked[ i ] )
-				g_Hooks.pPlayerHook[ i ]->Unhook( vtable_indexes::extraBonePro );
+				hooks.pPlayerHook[ i ]->Unhook( hook_index::bone_processing );
 
 			Hooked[ i ] = false;
 			continue;
 		}
 
-		if ( !Init[ i ] )
-		{
-			g_Hooks.pPlayerHook[ i ] = std::make_unique<ShadowVTManager>( );
+		if ( !Init[ i ] ) {
+			hooks.pPlayerHook[ i ] = std::make_unique<ShadowVTManager>( );
 			Init[ i ] = true;
 		}
 
 		if ( Hooked[ i ] )
-			g_Hooks.pPlayerHook[ i ]->Unhook( vtable_indexes::extraBonePro );
+			hooks.pPlayerHook[ i ]->Unhook( hook_index::bone_processing );
 
-		if ( !Hooked[ i ] )
-		{
-			g_Hooks.pPlayerHook[ i ]->Setup( pPlayerEntity );
-			g_Hooks.pPlayerHook[ i ]->Hook( vtable_indexes::extraBonePro, Hooks::DoExtraBonesProcessing );
+		if ( !Hooked[ i ] ) {
+			hooks.pPlayerHook[ i ]->Setup( pPlayerEntity );
+			hooks.pPlayerHook[ i ]->Hook( hook_index::bone_processing, hooking::DoExtraBonesProcessing );
 
 			Hooked[ i ] = true;
 		}
 	}
 }
 
-bool __fastcall Hooks::CreateMove( IClientMode* thisptr, void* edx, float sample_frametime, CUserCmd* pCmd )
+void __fastcall hooking::SceneEnd( void* ecx, void* edx )
 {
-	// Call original createmove before we start screwing with it
-	static auto oCreateMove = g_Hooks.pClientModeHook->GetOriginal<CreateMove_t>( vtable_indexes::createMove );
-	oCreateMove( thisptr, edx, sample_frametime, pCmd );
-
-	if ( !pCmd || !pCmd->command_number )
-		return oCreateMove;
-
-	// Get globals
-	g::pCmd = pCmd;
-	g::pLocalEntity = g_pEntityList->GetClientEntity( g_pEngine->GetLocalPlayer( ) );
-	g::bSendPacket = true;
-	if ( !g::pLocalEntity )
-		return oCreateMove;
-
-	uintptr_t* framePtr;
-	__asm mov framePtr, ebp;
-
-	g::OriginalView = g::pCmd->viewangles;
-
-	//	HookPlayers();
-
-	g_Misc.OnCreateMove( );
-	g_Resolver.OnCreateMove( );
-
-	engine_prediction::RunEnginePred( );
-	g_AntiAim.OnCreateMove( );
-	g_Aimbot.OnCreateMove( );
-	g_Legitbot.OnCreateMove( );
-	engine_prediction::EndEnginePred( );
-
-	g_Misc.MovementFix( g::OriginalView );
-	g_Math.Clamp( g::pCmd->viewangles );
-
-	if ( g::bSendPacket )
-		g::RealAngle = g::pCmd->viewangles;
-
-	*( bool* )( *framePtr - 0x1C ) = g::bSendPacket;
-
-	g::pCmd->buttons |= IN_BULLRUSH; // hehe
-
-	return false;
-}
-
-void __fastcall Hooks::SceneEnd( void* ecx, void* edx )
-{
-	static auto oSceneEnd = g_Hooks.pRenderViewHook->GetOriginal<SceneEnd_t>( vtable_indexes::sceneEnd );
+	static auto oSceneEnd = hooks.pRenderViewHook.get_original<SceneEnd_t>( hook_index::scene_end );
 	oSceneEnd( ecx, edx );
 
-	static IMaterial* Material = nullptr;
-	static bool ResetMaterial = false;
-
-	if ( !g::pLocalEntity || !g_pEngine->IsInGame( ) || !g_pEngine->IsConnected( ) || !g_Menu.Config.Chams )
-	{
-		Material = nullptr;
-		return;
-	}
-
-	if ( Material == nullptr )
-	{
-		Material = g_pMaterialSys->FindMaterial( "FlatChams", "Model textures" );
-		return;
-	}
-
-	if ( !g::pLocalEntity->IsAlive( ) )
-	{
-		if ( ResetMaterial )
-		{
-			Material = nullptr;
-			ResetMaterial = false;
-		}
-
-		return;
-	}
-	else
-		ResetMaterial = true;
-
-	for ( int i = 1; i < g_pEngine->GetMaxClients( ); ++i )
-	{
-		C_BaseEntity* pPlayerEntity = g_pEntityList->GetClientEntity( i );
-
-		if ( !pPlayerEntity
-			|| !pPlayerEntity->IsAlive( )
-			|| pPlayerEntity->IsDormant( )
-			|| pPlayerEntity->GetTeam( ) == g::pLocalEntity->GetTeam( ) )
-			continue;
-
-		Material->SetMaterialVarFlag( MATERIAL_VAR_IGNOREZ, true );
-		Material->AlphaModulate( 1.f );
-		Material->ColorModulate( g_Menu.Config.ChamsColor.red / 255.f, g_Menu.Config.ChamsColor.green / 255.f, g_Menu.Config.ChamsColor.blue / 255.f );
-		g_pModelRender->ForcedMaterialOverride( Material );
-		pPlayerEntity->DrawModel( 0x1, pPlayerEntity->GetModelInstance( ) );
-		g_pModelRender->ForcedMaterialOverride( nullptr );
-	}
+	
 }
 
-void __fastcall Hooks::DoExtraBonesProcessing( void* ECX, void* EDX, void* unkn1, void* unkn2, void* unkn3, void* unkn4, CBoneBitList& unkn5, void* unkn6 )
+void __fastcall hooking::DoExtraBonesProcessing( void* ECX, void* EDX, void* unkn1, void* unkn2, void* unkn3, void* unkn4, CBoneBitList& unkn5, void* unkn6 )
 {
 	C_BaseEntity* pPlayerEntity = ( C_BaseEntity* )ECX;
 
@@ -212,7 +125,7 @@ void __fastcall Hooks::DoExtraBonesProcessing( void* ECX, void* EDX, void* unkn1
 	if ( !pPlayerEntity->AnimState( ) )
 		return;
 
-	auto oDoExtraBonesProcessing = g_Hooks.pPlayerHook[ pPlayerEntity->EntIndex( ) ]->GetOriginal<ExtraBoneProcess_t>( vtable_indexes::extraBonePro );
+	auto oDoExtraBonesProcessing = hooks.pPlayerHook[ pPlayerEntity->EntIndex( ) ]->GetOriginal<ExtraBoneProcess_t>( hook_index::bone_processing );
 
 	float Backup = pPlayerEntity->AnimState( )->m_flUnknownFraction;
 	pPlayerEntity->AnimState( )->m_flUnknownFraction = 0;
@@ -222,29 +135,17 @@ void __fastcall Hooks::DoExtraBonesProcessing( void* ECX, void* EDX, void* unkn1
 	pPlayerEntity->AnimState( )->m_flUnknownFraction = Backup;
 }
 
-void __fastcall Hooks::DrawModelExecute( void* ecx, void* edx, IMatRenderContext* context, const DrawModelState_t& state, const ModelRenderInfo_t& info, matrix3x4_t* matrix )
+void __fastcall hooking::DrawModelExecute( void* ecx, void* edx, IMatRenderContext* context, const DrawModelState_t& state, const ModelRenderInfo_t& info, matrix3x4_t* matrix )
 {
-	static auto oDrawModelExecute = g_Hooks.pModelHook->GetOriginal<DrawModelExecute_t>( vtable_indexes::dme );
+	static auto oDrawModelExecute = hooks.pModelHook.get_original<DrawModelExecute_t>( hook_index::draw_model_execute );
 
 	const char* ModelName = g_pModelInfo->GetModelName( ( model_t* )info.pModel );
 
 	C_BaseEntity* pPlayerEntity = g_pEntityList->GetClientEntity( info.index );
 
-	if ( pPlayerEntity && pPlayerEntity->IsAlive( ) && !pPlayerEntity->IsDormant( ) && g_Aimbot.Matrix[ info.index ] && strstr( ModelName, "models/player" ) )
-		oDrawModelExecute( ecx, context, state, info, g_Aimbot.Matrix[ info.index ] );
-	else
-		oDrawModelExecute( ecx, context, state, info, matrix );
-}
 
-void __stdcall Hooks::FrameStageNotify( ClientFrameStage_t curStage )
-{
-	static auto oFrameStage = g_Hooks.pClientHook->GetOriginal<FrameStageNotify_t>( vtable_indexes::frameStage );
 
-	g_Misc.ThirdPerson( curStage );
-
-	g_Resolver.FrameStage( curStage );
-
-	oFrameStage( curStage );
+	oDrawModelExecute( ecx, context, state, info, matrix );
 }
 
 C_BaseEntity* UTIL_PlayerByIndex( int index )
@@ -258,9 +159,9 @@ C_BaseEntity* UTIL_PlayerByIndex( int index )
 	return UTIL_PlayerByIndex( index );
 }
 
-void __fastcall Hooks::PaintTraverse( PVOID pPanels, int edx, unsigned int vguiPanel, bool forceRepaint, bool allowForce )
+void __fastcall hooking::PaintTraverse( PVOID pPanels, int edx, unsigned int vguiPanel, bool forceRepaint, bool allowForce )
 {
-	static auto oPaintTraverse = g_Hooks.pPanelHook->GetOriginal<PaintTraverse_t>( vtable_indexes::paint );
+	static auto oPaintTraverse = hooks.pPanelHook.get_original<PaintTraverse_t>( hook_index::paint_traverse );
 	static unsigned int panelID, panelHudID;
 
 	if ( !panelHudID )
@@ -281,7 +182,7 @@ void __fastcall Hooks::PaintTraverse( PVOID pPanels, int edx, unsigned int vguiP
 		if ( !strcmp( "MatSystemTopPanel", g_pPanel->GetName( vguiPanel ) ) )
 		{
 			panelID = vguiPanel;
-			g_Hooks.bInitializedDrawManager = true;
+			hooks.bInitializedDrawManager = true;
 		}
 
 	if ( panelID == vguiPanel )
@@ -315,75 +216,7 @@ void __fastcall Hooks::PaintTraverse( PVOID pPanels, int edx, unsigned int vguiP
 	}
 }
 
-void Event::FireGameEvent( IGameEvent* event )
-{
-	if ( !event )
-		return;
-
-	if ( !g::pLocalEntity )
-		return;
-
-	auto attacker = g_pEntityList->GetClientEntity( g_pEngine->GetPlayerForUserID( event->GetInt( "attacker" ) ) );
-	if ( !attacker )
-		return;
-
-	if ( attacker != g::pLocalEntity )
-		return;
-
-	int index = g_pEngine->GetPlayerForUserID( event->GetInt( "userid" ) );
-
-	PlayerInfo_t pInfo;
-	g_pEngine->GetPlayerInfo( index, &pInfo );
-
-	g::Hit[ index ] = true;
-
-	if ( !g_Menu.Config.Ak47meme )
-		g_pEngine->ExecuteClientCmd( "play physics\\metal\\paintcan_impact_hard3.wav" );
-};
-
-void __fastcall Hooks::OverrideView( void* ecx, void* edx, CViewSetup* pSetup )
-{
-	static auto oOverrideView = g_Hooks.pClientModeHook->GetOriginal<OverrideView_t>( vtable_indexes::view );
-
-	if ( g_pEngine->IsConnected( ) && g_pEngine->IsInGame( ) )
-	{
-		if ( !g::pLocalEntity )
-			return;
-
-		if ( !g::pLocalEntity->IsAlive( ) )
-			return;
-
-		if ( g_Menu.Config.NoRecoil )
-		{
-			Vector viewPunch = g::pLocalEntity->GetViewPunchAngle( );
-			Vector aimPunch = g::pLocalEntity->GetAimPunchAngle( );
-
-			pSetup->angles[ 0 ] -= ( viewPunch[ 0 ] + ( aimPunch[ 0 ] * 2 * 0.4499999f ) );
-			pSetup->angles[ 1 ] -= ( viewPunch[ 1 ] + ( aimPunch[ 1 ] * 2 * 0.4499999f ) );
-			pSetup->angles[ 2 ] -= ( viewPunch[ 2 ] + ( aimPunch[ 2 ] * 2 * 0.4499999f ) );
-		}
-
-		if ( g_Menu.Config.Fov != 0 && !g::pLocalEntity->IsScoped( ) )
-			pSetup->fov = g_Menu.Config.Fov;
-
-		if ( g_Menu.Config.NoZoom && g::pLocalEntity->IsScoped( ) )
-			pSetup->fov = ( g_Menu.Config.Fov == 0 ) ? 90 : g_Menu.Config.Fov;
-	}
-
-	oOverrideView( ecx, edx, pSetup );
-}
-
-void __fastcall Hooks::LockCursor( ISurface* thisptr, void* edx )
-{
-	static auto oLockCursor = g_Hooks.pSurfaceHook->GetOriginal<LockCursor_t>( vtable_indexes::lockCursor );
-
-	if ( !g_Menu.menuOpened )
-		return oLockCursor( thisptr, edx );
-
-	g_pSurface->UnLockCursor( );
-}
-
-LRESULT Hooks::WndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+LRESULT hooking::WndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 {
 	// for now as a lambda, to be transfered somewhere
 	// Thanks uc/WasserEsser for pointing out my mistake!
@@ -406,7 +239,7 @@ LRESULT Hooks::WndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 			bButton = !bButton;
 	};
 
-	if ( g_Hooks.bInitializedDrawManager )
+	if ( hooks.bInitializedDrawManager )
 	{
 		// our wndproc capture fn
 		if ( g_Menu.menuOpened )
@@ -416,5 +249,5 @@ LRESULT Hooks::WndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 	}
 
 
-	return CallWindowProcA( g_Hooks.pOriginalWNDProc, hWnd, uMsg, wParam, lParam );
+	return CallWindowProcA( hooks.pOriginalWNDProc, hWnd, uMsg, wParam, lParam );
 }

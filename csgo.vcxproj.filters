@@ -69,6 +69,18 @@
     <ClCompile Include="csgo\Hooks\Hook_Method\vfunc_hook.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="csgo\Hooks\Hook_Functions\event_loging_related.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="csgo\Hooks\Hook_Functions\surface_hook_related.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="csgo\Hooks\Hook_Functions\client_mode_related.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="csgo\Hooks\Hook_Functions\client_hook_related.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Antario\Menu.h">

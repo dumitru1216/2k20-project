@@ -25,8 +25,7 @@ namespace hook_index {
 	constexpr auto scene_end = 9;
 }
 
-class Event : public IGameEventListener
-{
+class Event : public IGameEventListener {
 public:
 	void FireGameEvent(IGameEvent *event);
 	int  GetEventDebugID = 42;
@@ -39,25 +38,19 @@ public:
 extern Event g_Event;
 class IMatRenderContext;
 class CBoneBitList;
-class VMTHook;
 class ShadowVTManager;
-class Hooks
-{
+class hooking {
 public:
     // Initialization setup, called on injection
-    static void Init();
-    static void Restore();
-	static void HookPlayers();
+    static void initialize();
+    static void restore();
+	static void hook_players();
 
-    /*---------------------------------------------*/
-    /*-------------Hooked functions----------------*/
-    /*---------------------------------------------*/
-
-	static void     __stdcall   FrameStageNotify(ClientFrameStage_t curStage);
-    static bool     __fastcall  CreateMove(IClientMode*, void*, float, CUserCmd*);
-    static void     __fastcall  LockCursor(ISurface*, void*);
+	static void     __stdcall   frame_stage_notify(ClientFrameStage_t curStage);
+    static bool     __fastcall  create_move(IClientMode*, void*, float, CUserCmd*);
+    static void     __fastcall  lock_cursor(ISurface*, void*);
 	static void		__fastcall  PaintTraverse(PVOID pPanels, int edx, unsigned int vguiPanel, bool forceRepaint, bool allowForce);
-	static void     __fastcall  OverrideView(void* ecx, void* edx, CViewSetup* pSetup);
+	static void     __fastcall  overide_view(void* ecx, void* edx, CViewSetup* pSetup);
 	static void     __fastcall  DrawModelExecute(void* ecx, void* edx, IMatRenderContext* context, const DrawModelState_t& state, const ModelRenderInfo_t& render_info, matrix3x4_t* matrix);
 	static void     __fastcall  DoExtraBonesProcessing(void * ECX, void * EDX, void * unkn1, void * unkn2, void * unkn3, void * unkn4, CBoneBitList & unkn5, void * unkn6);
 	static void     __fastcall  SceneEnd(void *ecx, void *edx);
@@ -65,9 +58,6 @@ public:
     static LRESULT  __stdcall   WndProc   (HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 private:
-    /*---------------------------------------------*/
-    /*-------------VMT Hook pointers---------------*/
-    /*---------------------------------------------*/
 
 	vfunc_hook pClientHook;
 	vfunc_hook pClientModeHook;
@@ -81,11 +71,11 @@ private:
     /*-------------Hook prototypes-----------------*/
     /*---------------------------------------------*/
 
-	typedef void (__stdcall*  FrameStageNotify_t) (ClientFrameStage_t);
-    typedef bool (__fastcall* CreateMove_t) (IClientMode*, void*, float, CUserCmd*);
-    typedef void (__fastcall* LockCursor_t) (ISurface*, void*);
+	typedef void (__stdcall*  frame_stage_notify_t ) (ClientFrameStage_t);
+    typedef bool (__fastcall* create_move_t ) (IClientMode*, void*, float, CUserCmd*);
+    typedef void (__fastcall* lock_cursor_t ) (ISurface*, void*);
 	typedef void (__thiscall* PaintTraverse_t) (PVOID, unsigned int, bool, bool);
-	typedef void (__fastcall* OverrideView_t) (void*, void*, CViewSetup*);
+	typedef void (__fastcall* overide_view_t ) (void*, void*, CViewSetup*);
 	typedef void (__thiscall* DrawModelExecute_t) (void*, IMatRenderContext*, const DrawModelState_t&, const ModelRenderInfo_t&, matrix3x4_t*);
 	typedef void (__thiscall* ExtraBoneProcess_t) (void*, void*, void*, void*, void*, CBoneBitList&, void*);
 	typedef void (__fastcall* SceneEnd_t) (void*, void*);
@@ -97,7 +87,7 @@ private:
 
 	template<class Type> // GLAD
 	Type HookManual(uintptr_t *instance, int offset, Type hook)
-	{
+{
 		DWORD Dummy;
 		Type fnOld = (Type)instance[offset];
 		VirtualProtect((void*)(instance + offset * 0x4), 0x4, PAGE_EXECUTE_READWRITE, &Dummy);
@@ -106,8 +96,7 @@ private:
 		return fnOld;
 	}
 };
-
-extern Hooks g_Hooks;
+extern hooking hooks;
 
 class ProtectGuard
 {

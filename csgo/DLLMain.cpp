@@ -1,5 +1,5 @@
 ﻿#include <thread>
-#include "Hooks.h"
+#include "Hooks/Hooks.h"
 #include "Utils\Utils.h"
 #include "Utils\GlobalVars.h"
 
@@ -7,12 +7,12 @@ HINSTANCE HThisModule;
 
 int OnDllAttach()
 {
-    Hooks::Init();
+    hooking::initialize();
 
 	while (true)
 		Sleep(10000000);
 
-	Hooks::Restore();
+	hooking::restore();
 
 	FreeLibraryAndExitThread(HThisModule, 0);
 }

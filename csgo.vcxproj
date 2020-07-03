@@ -99,7 +99,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;ANTARIO_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <LanguageStandard>stdcpp17</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
@@ -137,6 +137,10 @@
     <ClCompile Include="csgo\Features\Resolver\Resolver.cpp" />
     <ClCompile Include="csgo\Hooks\Hooks.cpp" />
     <ClCompile Include="csgo\DLLMain.cpp" />
+    <ClCompile Include="csgo\Hooks\Hook_Functions\client_hook_related.cpp" />
+    <ClCompile Include="csgo\Hooks\Hook_Functions\client_mode_related.cpp" />
+    <ClCompile Include="csgo\Hooks\Hook_Functions\event_loging_related.cpp" />
+    <ClCompile Include="csgo\Hooks\Hook_Functions\surface_hook_related.cpp" />
     <ClCompile Include="csgo\Hooks\Hook_Method\vfunc_hook.cpp" />
     <ClCompile Include="csgo\Menu\Menu.cpp" />
     <ClCompile Include="csgo\Menu\TGFCfg.cpp" />
