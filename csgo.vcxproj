@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>15.0</VCProjectVersion>
+    <ProjectGuid>{1B8103F7-F793-47B0-9FBE-44EC66BC319D}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>Antario</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)build\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</IntDir>
+    <ExecutablePath>$(VC_ExecutablePath_x86);$(WindowsSDK_ExecutablePath);$(VS_ExecutablePath);$(MSBuild_ExecutablePath);$(SystemRoot)\SysWow64;$(FxCopDir);$(PATH);$(ExecutablePath);$(DXSDK_DIR)Utilities\bin\x86</ExecutablePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(IncludePath);$(DXSDK_DIR)Include</IncludePath>
+    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86;$(LibraryPath);$(DXSDK_DIR)Lib\x86</LibraryPath>
+    <TargetName>hvh</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)build\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</IntDir>
+    <ExecutablePath>$(VC_ExecutablePath_x86);$(WindowsSDK_ExecutablePath);$(VS_ExecutablePath);$(MSBuild_ExecutablePath);$(SystemRoot)\SysWow64;$(FxCopDir);$(PATH);$(ExecutablePath);$(DXSDK_DIR)Utilities\bin\x86</ExecutablePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(IncludePath);$(DXSDK_DIR)Include</IncludePath>
+    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86;$(LibraryPath);$(DXSDK_DIR)Lib\x86</LibraryPath>
+    <TargetName>hvh</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Full</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;ANTARIO_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <MapExports>true</MapExports>
+      <AssemblyDebug>true</AssemblyDebug>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>false</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;ANTARIO_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <StringPooling>
+      </StringPooling>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
+      <EnableParallelCodeGeneration>
+      </EnableParallelCodeGeneration>
+      <RuntimeTypeInfo>
+      </RuntimeTypeInfo>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <AdditionalOptions>
+      </AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <PerUserRedirection>false</PerUserRedirection>
+      <MapExports>true</MapExports>
+      <AssemblyDebug>true</AssemblyDebug>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="csgo\Features\Aimbot\EnginePrediction.cpp" />
+    <ClCompile Include="csgo\Features\Aimbot\Aimbot.cpp" />
+    <ClCompile Include="csgo\Features\Aimbot\Autowall.cpp" />
+    <ClCompile Include="csgo\Features\Aimbot\LagComp.cpp" />
+    <ClCompile Include="csgo\Features\AntiAim\AntiAim.cpp" />
+    <ClCompile Include="csgo\Features\Legit\Legitbot.cpp" />
+    <ClCompile Include="csgo\Features\Resolver\Resolver.cpp" />
+    <ClCompile Include="csgo\Hooks\Hooks.cpp" />
+    <ClCompile Include="csgo\DLLMain.cpp" />
+    <ClCompile Include="csgo\Hooks\Hook_Method\vfunc_hook.cpp" />
+    <ClCompile Include="csgo\Menu\Menu.cpp" />
+    <ClCompile Include="csgo\Menu\TGFCfg.cpp" />
+    <ClCompile Include="csgo\SDK\CEntity.cpp" />
+    <ClCompile Include="csgo\Utils\GlobalVars.cpp" />
+    <ClCompile Include="csgo\Utils\Interfaces.cpp" />
+    <ClCompile Include="csgo\Utils\Math.cpp" />
+    <ClCompile Include="csgo\Utils\NetvarManager.cpp" />
+    <ClCompile Include="csgo\Features\Visuals\ESP.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="csgo\Features\Aimbot\Aimbot.h" />
+    <ClInclude Include="csgo\Features\Aimbot\Autowall.h" />
+    <ClInclude Include="csgo\Features\Aimbot\EnginePrediction.h" />
+    <ClInclude Include="csgo\Features\Aimbot\LagComp.h" />
+    <ClInclude Include="csgo\Features\AntiAim\AntiAim.h" />
+    <ClInclude Include="csgo\Features\Features.h" />
+    <ClInclude Include="csgo\Features\Legit\Legitbot.h" />
+    <ClInclude Include="csgo\Features\Misc\Misc.h" />
+    <ClInclude Include="csgo\Features\Resolver\Resolver.h" />
+    <ClInclude Include="csgo\Hooks\Hooks.h" />
+    <ClInclude Include="Antario\Menu.h" />
+    <ClInclude Include="csgo\Hooks\Hook_Method\vfunc_hook.hpp" />
+    <ClInclude Include="csgo\Menu\Menu.h" />
+    <ClInclude Include="csgo\Menu\TGFCfg.h" />
+    <ClInclude Include="csgo\SDK\bspflags.h" />
+    <ClInclude Include="csgo\SDK\CGlobalVarsBase.h" />
+    <ClInclude Include="csgo\SDK\CHandle.h" />
+    <ClInclude Include="csgo\SDK\CEntity.h" />
+    <ClInclude Include="csgo\SDK\CInput.h" />
+    <ClInclude Include="csgo\SDK\ClientClass.h" />
+    <ClInclude Include="csgo\SDK\CModelRender.h" />
+    <ClInclude Include="csgo\SDK\Hitboxes.h" />
+    <ClInclude Include="csgo\SDK\ICvar.h" />
+    <ClInclude Include="csgo\SDK\IEngineTrace.h" />
+    <ClInclude Include="csgo\SDK\IMaterial.h" />
+    <ClInclude Include="csgo\SDK\ISurface.h" />
+    <ClInclude Include="csgo\SDK\ISurfaceData.h" />
+    <ClInclude Include="csgo\SDK\IVModelInfo.h" />
+    <ClInclude Include="csgo\SDK\IVRenderView.h" />
+    <ClInclude Include="csgo\Utils\Color.h" />
+    <ClInclude Include="csgo\SDK\CPrediction.h" />
+    <ClInclude Include="csgo\SDK\Definitions.h" />
+    <ClInclude Include="csgo\SDK\IBaseClientDll.h" />
+    <ClInclude Include="csgo\SDK\IClientEntity.h" />
+    <ClInclude Include="csgo\SDK\IClientEntityList.h" />
+    <ClInclude Include="csgo\SDK\IClientMode.h" />
+    <ClInclude Include="csgo\SDK\IClientNetworkable.h" />
+    <ClInclude Include="csgo\SDK\IClientRenderable.h" />
+    <ClInclude Include="csgo\SDK\IClientThinkable.h" />
+    <ClInclude Include="csgo\SDK\IClientUnknown.h" />
+    <ClInclude Include="csgo\SDK\IGameEvent.h" />
+    <ClInclude Include="csgo\SDK\IVEngineClient.h" />
+    <ClInclude Include="csgo\SDK\KeyValues.h" />
+    <ClInclude Include="csgo\SDK\PlayerInfo.h" />
+    <ClInclude Include="csgo\Utils\GlobalVars.h" />
+    <ClInclude Include="csgo\Utils\Interfaces.h" />
+    <ClInclude Include="csgo\SDK\Recv.h" />
+    <ClInclude Include="csgo\SDK\Vector.h" />
+    <ClInclude Include="csgo\SDK\VMatrix.h" />
+    <ClInclude Include="csgo\Utils\Math.h" />
+    <ClInclude Include="csgo\Utils\NetvarManager.h" />
+    <ClInclude Include="csgo\Utils\SPoint.h" />
+    <ClInclude Include="csgo\Utils\SRect.h" />
+    <ClInclude Include="csgo\Utils\Utils.h" />
+    <ClInclude Include="csgo\Features\Visuals\ESP.h" />
+    <ClInclude Include="csgo\Utils\XorStr.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
